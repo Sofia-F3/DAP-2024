@@ -21,10 +21,10 @@ class _LoginView extends StatelessWidget {
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
-  List<Usuarios> usuarios = [
-    Usuarios('sofia', '1234'),
-    Usuarios('hola', 'jaja'),
-    Usuarios('piripi', 'papa'),
+  List<Users> usuarios = [
+    Users('sofia@gmail.com', '1234'),
+    Users('hola@gmail.com', 'jaja'),
+    Users('piriri@gmail.com', 'papa'),
   ];
 
   var snackBar_1 = SnackBar(
@@ -59,7 +59,7 @@ class _LoginView extends StatelessWidget {
             child: TextField(
               controller: userController,
               decoration: const InputDecoration(
-                  hintText: 'Usuario ', icon: Icon(Icons.person)),
+                  hintText: 'Email ', icon: Icon(Icons.email)),
             ),
           ),
           SizedBox(

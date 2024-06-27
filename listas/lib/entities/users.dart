@@ -1,6 +1,6 @@
-class Usuarios {
+class Users {
   String user;
   String pass;
 
-  Usuarios(this.user, this.pass);
+  Users(this.user, this.pass);
 }
