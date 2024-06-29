@@ -57,20 +57,19 @@ class _LoginView extends StatelessWidget {
               ElevatedButton(
                 onPressed: (){
                   if(userController.text == 'eliysofi' && passController.text == 'somoslindas'){
-                    print("Continue");
                     context.pushNamed(HomeScreen.name, extra: userController.text);
                   }
                   else if(userController.text == '' && passController.text == ''){
-                    print('Insertar usuario y contraseña');
+                    //poner mensaje de 'Insertar usuario y contraseña'
                   }
                   else if(userController.text == ''){
-                    print('Insertar usuario');
+                    //poner mensaje de 'Insertar usuario'
                   }
                   else if(passController.text == ''){
-                    print('Insertar contraseña');
+                    //poner mensaje de 'Insertar contraseña'
                   }
                   else if(userController.text != user || passController.text != pass){
-                    print('Usuario o Contraseña incorrecto');
+                    //poner mensaje de 'Usuario o Contraseña incorrecto'
                   }
                 }, 
                 child: const Text("Login")

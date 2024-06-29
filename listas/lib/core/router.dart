@@ -1,5 +1,6 @@
 import 'package:listas/screens/home_screen.dart';
 import 'package:listas/screens/login_screen.dart';
+import 'package:listas/screens/details_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(routes: [
@@ -11,6 +12,11 @@ final appRouter = GoRouter(routes: [
   GoRoute(
     name: HomeScreen.name,
     path: '/home',
-    builder: (context, state) => HomeScreen(userName: state.extra as String),
+    builder: (context, state) => HomeScreen(),
+  ),
+  GoRoute(
+    name: DetailScreen.name,
+    path: '/detalles',
+    builder: (context, state) => DetailScreen(poke: state.extra as dynamic),
   ),
 ]);
