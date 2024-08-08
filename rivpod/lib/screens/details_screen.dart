@@ -40,7 +40,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () {/*
                 final name = _controller.text;
                 if (name.isNotEmpty) {
                   if (widget.name == null) {
@@ -51,18 +51,18 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                     ref.read(nameListProvider.notifier).editName(index, name);
                   }
                   context.pop();
-                }
+                }*/
               },
               child: Text(widget.name == null ? 'Agregar' : 'Guardar'),
             ),
             if (widget.name != null) ...[
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () {/*
                   final index =
                       ref.read(nameListProvider).indexOf(widget.name!);
                   ref.read(nameListProvider.notifier).deleteName(index);
-                  context.pop();
+                  context.pop();*/
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
                 child: const Text('Eliminar'),

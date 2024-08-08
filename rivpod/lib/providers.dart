@@ -1,5 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+StateProvider<List<String>> nameListProvider = StateProvider<List<String>>((ref) => nombres);
+
+List<String> nombres = [
+  'juan',
+  "sofi",
+  "ana",
+  "hola",
+];
+
+/*
 final nameListProvider =
     StateNotifierProvider<NameListNotifier, List<String>>((ref) {
   return NameListNotifier();
@@ -26,3 +36,4 @@ class NameListNotifier extends StateNotifier<List<String>> {
     state = updatedList;
   }
 }
+*/
