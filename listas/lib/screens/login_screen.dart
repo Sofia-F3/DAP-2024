@@ -1,50 +1,38 @@
 // ignore_for_file: must_be_immutable
 import 'package:listas/screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listas/entities/users.dart';
+import 'package:listas/providers/provider.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   static const String name = 'login';
-
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    TextEditingController userController = TextEditingController();
+    TextEditingController passController = TextEditingController();
+    final List<Users> listaUsuarios = ref.watch(userProvider);
+
+    var snackBar_1 = SnackBar(
+        content: const Text("Usuario incorrecto"),
+        duration: const Duration(seconds: 1),
+        action: SnackBarAction(
+          label: 'Descartar',
+          onPressed: () {},
+        ));
+
+    var snackBar_2 = SnackBar(
+        content: const Text("Contraseña incorrecta"),
+        duration: const Duration(seconds: 1),
+        action: SnackBarAction(
+          label: 'Descartar',
+          onPressed: () {},
+        ));
+
     return Scaffold(
-      body: _LoginView(),
-    );
-  }
-}
-
-class _LoginView extends StatelessWidget {
-  TextEditingController userController = TextEditingController();
-  TextEditingController passController = TextEditingController();
-
-  List<Users> usuarios = [
-    Users('sofia@gmail.com', '1234'),
-    Users('hola@gmail.com', 'jaja'),
-    Users('piriri@gmail.com', 'papa'),
-  ];
-
-  var snackBar_1 = SnackBar(
-      content: const Text("Usuario incorrecto"),
-      action: SnackBarAction(
-        label: 'Descartar',
-        onPressed: () {},
-      ));
-
-  var snackBar_2 = SnackBar(
-      content: const Text("Contraseña incorrecta"),
-      action: SnackBarAction(
-        label: 'Descartar',
-        onPressed: () {},
-      ));
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
           body: Center(
               child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +47,7 @@ class _LoginView extends StatelessWidget {
             child: TextField(
               controller: userController,
               decoration: const InputDecoration(
-                  hintText: 'Email ', icon: Icon(Icons.email)),
+                  hintText: 'Usuario ', icon: Icon(Icons.person)),
             ),
           ),
           SizedBox(
@@ -74,11 +62,13 @@ class _LoginView extends StatelessWidget {
           ),
           ElevatedButton(
               onPressed: () {
-                int x = usuarios.indexWhere((usuario) => usuario.user == userController.text);
+                int x = listaUsuarios.indexWhere(
+                    (usuario) => usuario.user == userController.text);
                 //indexWhere devuelve -1 si no encuentra
-                if (x != -1){
-                  if (usuarios[x].pass == passController.text) {
-                    context.pushNamed(HomeScreen.name, extra: userController.text);
+                if (x != -1) {
+                  if (listaUsuarios[x].pass == passController.text) {
+                    context.pushNamed(HomeScreen.name,
+                        extra: userController.text);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(snackBar_2);
                   }
@@ -88,7 +78,6 @@ class _LoginView extends StatelessWidget {
               },
               child: const Text("Login")),
         ],
-      ))),
-    );
+      )));
   }
 }

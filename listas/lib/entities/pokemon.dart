@@ -1,7 +1,7 @@
 class Pokemon {
-  String poke;
-  String desc;
+  String nombre;
+  String tipo;
   String imagen;
 
-  Pokemon(this.poke, this.desc, this.imagen);
+  Pokemon(this.nombre, this.tipo, this.imagen);
 }

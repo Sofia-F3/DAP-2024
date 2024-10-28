@@ -17,6 +17,6 @@ final appRouter = GoRouter(routes: [
   GoRoute(
     name: DetailScreen.name,
     path: '/detalles',
-    builder: (context, state) => DetailScreen(poke: state.extra as dynamic),
+    builder: (context, state) => DetailScreen(),
   ),
 ]);
