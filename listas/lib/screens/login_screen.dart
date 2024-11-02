@@ -1,83 +1,171 @@
-// ignore_for_file: must_be_immutable
-import 'package:listas/screens/home_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:listas/entities/users.dart';
-import 'package:listas/providers/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:listas/screens/home_screen.dart';
+import 'package:listas/screens/register_screen.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends StatelessWidget {
   static const String name = 'login';
+
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
-    TextEditingController userController = TextEditingController();
-    TextEditingController passController = TextEditingController();
-    final List<Users> listaUsuarios = ref.watch(userProvider);
-
-    var snackBar_1 = SnackBar(
-        content: const Text("Usuario incorrecto"),
-        duration: const Duration(seconds: 1),
-        action: SnackBarAction(
-          label: 'Descartar',
-          onPressed: () {},
-        ));
-
-    var snackBar_2 = SnackBar(
-        content: const Text("Contraseña incorrecta"),
-        duration: const Duration(seconds: 1),
-        action: SnackBarAction(
-          label: 'Descartar',
-          onPressed: () {},
-        ));
-
+  Widget build(BuildContext context) {
     return Scaffold(
-          body: Center(
-              child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Logueate: ",
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 50,
-            width: 600,
-            child: TextField(
-              controller: userController,
-              decoration: const InputDecoration(
-                  hintText: 'Usuario ', icon: Icon(Icons.person)),
+      body: _LoginView(),
+    );
+  }
+}
+
+class _LoginView extends StatefulWidget {
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
+  TextEditingController userController = TextEditingController();
+  TextEditingController passController = TextEditingController();
+  bool textoOculto = true;
+  bool textoCubierto = false;
+
+  String mensajeError = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Logueate: ",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
-          ),
-          SizedBox(
-            height: 100,
-            width: 600,
-            child: TextField(
-              controller: passController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                  hintText: 'Contraseña', icon: Icon(Icons.key)),
+            SizedBox(
+              height: 50,
+              width: 350,
+              child: TextField(
+                controller: userController,
+                decoration: const InputDecoration(
+                  hintText: 'Email ',
+                  icon: Icon(Icons.email),
+                ),
+              ),
             ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                int x = listaUsuarios.indexWhere(
-                    (usuario) => usuario.user == userController.text);
-                //indexWhere devuelve -1 si no encuentra
-                if (x != -1) {
-                  if (listaUsuarios[x].pass == passController.text) {
-                    context.pushNamed(HomeScreen.name,
-                        extra: userController.text);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar_2);
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar_1);
+            SizedBox(
+              height: 65,
+              width: 350,
+              child: TextField(
+                controller: passController,
+                obscureText: textoOculto,
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  hintText: 'Contraseña',
+                  icon: const Icon(Icons.key),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      textoOculto ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        textoOculto = !textoOculto;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            if (mensajeError.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  mensajeError,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () async {
+                setState(() {
+                  mensajeError = '';
+                });
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: userController.text,
+                    password: passController.text,
+                  );
+                  context.pushNamed(HomeScreen.name);
+                } on FirebaseAuthException catch (e) {
+                  setState(() {
+                    if (e.code == 'channel-error') {
+                      mensajeError = 'Complete email y contraseña';
+                    } else if (e.code == 'invalid-credential') {
+                      mensajeError = 'Usuario o contraseña incorrecto';
+                    } else if (e.code == 'missing-password') {
+                      mensajeError = 'Poner contraseña';
+                    } else if (e.code == 'invalid-email') {
+                      mensajeError = 'Email inválido';
+                    } else if (e.code == 'too-many-requests') {
+                      mensajeError =
+                          'Se intentó iniciar sesión muchas veces, intente más tarde.';
+                    } else {
+                      mensajeError = 'Error desconocido: ${e.code}';
+                    }
+                  });
                 }
               },
-              child: const Text("Login")),
-        ],
-      )));
+              child: const Text("Login"),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            MouseRegion(
+              onEnter: (_) => setState(() => textoCubierto = true),
+              onExit: (_) => setState(() => textoCubierto = false),
+              child: GestureDetector(
+                onTap: () {
+                  context.pushNamed(RegisterScreen.name);
+                },
+                onTapDown: (_) {
+                  setState(() {
+                    textoCubierto = true;
+                  });
+                },
+                onTapUp: (_) {
+                  setState(() {
+                    textoCubierto = false;
+                  });
+                },
+                onTapCancel: () {
+                  setState(() {
+                    textoCubierto = false;
+                  });
+                },
+                child: Text(
+                  "No tenés cuenta? Registrate",
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                    color: textoCubierto
+                        ? const Color.fromARGB(178, 19, 75, 226)
+                        : const Color.fromARGB(255, 29, 163, 253),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

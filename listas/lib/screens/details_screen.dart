@@ -36,8 +36,8 @@ class DetailScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 100,
-              width: 600,
+              height: 50,
+              width: 350,
               child: TextField(
                 controller: nombrePokeController,
                 decoration: const InputDecoration(
@@ -46,8 +46,8 @@ class DetailScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(
-              height: 100,
-              width: 600,
+              height: 50,
+              width: 350,
               child: TextField(
                 controller: tipoPokeController,
                 decoration: const InputDecoration(
@@ -57,7 +57,7 @@ class DetailScreen extends ConsumerWidget {
             ),
             SizedBox(
               height: 100,
-              width: 600,
+              width: 350,
               child: TextField(
                 controller: imagenPokeController,
                 decoration: const InputDecoration(
@@ -65,7 +65,7 @@ class DetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
                 if (modoAgregar) {
@@ -86,7 +86,7 @@ class DetailScreen extends ConsumerWidget {
                 modoAgregar ? "Agregar" : "Modificar",
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             if (!modoAgregar)
               ElevatedButton(
                 onPressed: () {
