@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
@@ -6,37 +5,24 @@ import 'package:listas/entities/pokemon.dart';
 import 'package:listas/screens/details_screen.dart';
 import 'package:listas/providers/provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   static const String name = 'home';
-  HomeScreen({super.key});
-  final db = FirebaseFirestore.instance;
+  const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(pokemonProvider.notifier).obtenerDatos();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final List<Pokemon> listaPokemon = ref.watch(pokemonProvider);
-    
-    Future obtenerDatos() async {
-      await db.collection("pokemon").get().then(
-        (querySnapshot) {
-          for (var docSnapshot in querySnapshot.docs) {
-            String nombre = docSnapshot.data()["nombre"];
-            String tipo = docSnapshot.data()["tipo"];
-            String imagen = docSnapshot.data()["imagen"];
-
-            ref.read(pokemonProvider.notifier).state = [
-              ...listaPokemon,
-              Pokemon(
-                nombre,
-                tipo,
-                imagen,
-              ),
-            ];
-          }
-        },
-        onError: (error) => print("Error getting document: $error"),
-      );
-    }
-
     return Scaffold(
       body: Column(
         children: [

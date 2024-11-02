@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listas/providers/provider.dart';
 import 'package:listas/entities/pokemon.dart';
@@ -12,11 +13,13 @@ class DetailScreen extends ConsumerWidget {
   TextEditingController nombrePokeController = TextEditingController();
   TextEditingController tipoPokeController = TextEditingController();
   TextEditingController imagenPokeController = TextEditingController();
+  final db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context, ref) {
     final List<Pokemon> listaPokemon = ref.watch(pokemonProvider);
     final index = ref.watch(indexPokemonSeleccionado);
+
     bool modoAgregar;
     if (index != -1) {
       nombrePokeController.text = listaPokemon[index].nombre;
@@ -66,21 +69,16 @@ class DetailScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 if (modoAgregar) {
-                  ref.read(pokemonProvider.notifier).state = [
-                    //ref.read(pokemonProvider.notifier).state[listaPokemon.length] =
-                    ...listaPokemon,
-                    Pokemon(
+                  ref.read(pokemonProvider.notifier).subirDatos(
                       nombrePokeController.text,
                       tipoPokeController.text,
-                      imagenPokeController.text,
-                    ),
-                  ];
+                      imagenPokeController.text);
                 } else {
-                  ref.read(pokemonProvider.notifier).state[index] = Pokemon(
-                    nombrePokeController.text,
-                    tipoPokeController.text,
-                    imagenPokeController.text,
-                  );
+                  ref.read(pokemonProvider.notifier).modificarDatos(
+                      listaPokemon[index].id,
+                      nombrePokeController.text,
+                      tipoPokeController.text,
+                      imagenPokeController.text);
                 }
                 context.pushNamed(HomeScreen.name);
               },
@@ -92,7 +90,7 @@ class DetailScreen extends ConsumerWidget {
             if (!modoAgregar)
               ElevatedButton(
                 onPressed: () {
-                  ref.read(pokemonProvider.notifier).state.removeAt(index);
+                  db.collection("pokemon").doc(listaPokemon[index].id).delete();
                   context.pushNamed(HomeScreen.name);
                 },
                 child: const Text(

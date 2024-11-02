@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listas/entities/users.dart';
 import 'package:listas/entities/pokemon.dart';
@@ -7,17 +8,53 @@ StateProvider<List<Users>> userProvider = StateProvider((ref) => [
       Users('hola', '5678'),
     ]);
 
-StateProvider<List<Pokemon>> pokemonProvider = StateProvider((ref) => [
-      Pokemon('Pikachu', 'Eléctrico',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbfzYtn-eRiOeIygbWQ6S5yecoe-TpaJGngA&s'),
-      Pokemon('Charmander', 'Fuego',
-          'https://assets.pokemon.com/assets/cms2/img/pokedex/full/004.png'),
-      Pokemon('Togepi', 'Normal',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPZR0ZB7PCULDaPus_EB7b-nQDRda3j_JcVA&s'),
-      Pokemon('Charizard', 'Fuego',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxnHcsy6KiGjDw31evpwg1fqekzsOw9bg6LA&s'),
-      Pokemon('Snorlax', 'Normal',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJSo2PVnYSGU3xid9cmQGhv7IsIEWOAnPiSg&s'),
-    ]);
-
 StateProvider<int> indexPokemonSeleccionado = StateProvider((ref) => -1);
+
+final pokemonProvider = StateNotifierProvider<PokemonNotifier, List<Pokemon>>(
+  (ref) => PokemonNotifier(),
+);
+
+class PokemonNotifier extends StateNotifier<List<Pokemon>> {
+  PokemonNotifier() : super([]);
+
+  final db = FirebaseFirestore.instance;
+
+  Future<void> obtenerDatos() async {
+    try {
+      final querySnapshot = await db.collection("pokemon").get();
+
+      final listaPokemon = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Pokemon(
+          doc.id,
+          data["nombre"] as String,
+          data["tipo"] as String,
+          data["imagen"] as String,
+        );
+      }).toList();
+      state = listaPokemon;
+    } catch (error) {
+      print("Error al obtener datos: $error");
+    }
+  }
+
+  Future<void> subirDatos(nombre, tipo, imagen) async {
+    try {
+      await db
+          .collection("pokemon")
+          .add({"nombre": nombre, "tipo": tipo, "imagen": imagen});
+    } catch (error) {
+      print("Error al subir datos: $error");
+    }
+  }
+
+  Future<void> modificarDatos(id, nombre, tipo, imagen) async {
+    try {
+      await db.collection("pokemon").doc(id).set(
+          {"nombre": nombre, "tipo": tipo, "imagen": imagen},
+          SetOptions(merge: true));
+    } catch (error) {
+      print("Error al subir datos: $error");
+    }
+  }
+}
